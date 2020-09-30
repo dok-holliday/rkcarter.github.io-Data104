@@ -1,1 +1,1 @@
-Test. It's all just a test. 
+This website is currently being used for Data Analytics, pursuant to studies in Data 104. 
