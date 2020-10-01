@@ -1,0 +1,106 @@
+---
+title: "R Notebook"
+author: "Ronald Carter"
+date: "Sept 29, 2020"
+output: html_notebook
+---
+
+## Project Setup
+
+```{r}
+rm(list = ls(all.names = TRUE))
+setwd("~/Desktop/college_stuff/data_104")
+library(dplyr, warn.conflicts = FALSE) # suppress conflicts warning
+library(tidyr)
+library(ggplot2)
+```
+
+
+```{r}
+fbdf <- read.csv("Facebook FriendsCSV.csv", header = TRUE, sep = ',', skip = 2)
+attach(fbdf)
+str(fbdf)
+names(fbdf)
+summary(fbdf)
+```
+
+## Data Preparation
+```{r}
+names(fbdf)[names(fbdf)=="X..of.Tags"] <- "Tags"
+fbdf$Photos <- as.integer(gsub(",","", Photos))
+fbdf$Friends <- as.integer(gsub(",","", Friends))
+str(fbdf)
+```
+
+
+```{r}
+summary(Age)
+```
+
+
+```{r}
+fbdf <- select(fbdf, -Friend)  
+fbdf <- mutate(fbdf, AgeGroup = factor(case_when(
+        Age > 64 ~ "65+",
+        Age > 54 ~ "55-64",
+        Age > 44 ~ "45-54",
+        Age > 34 ~ "35-44",
+        Age > 24 ~ "25-34",
+        Age > 17 ~ "18-24",
+        TRUE ~ "13-17")))
+fbdf$Gender <- as.factor(fbdf$Gender <- case_when(
+  Gender == 1 ~ "male",
+  Gender == 0 ~ "female",
+  TRUE ~ "other"
+))
+fbdf$Orientation <- as.factor(fbdf$Orientation <- ifelse(Orientation == 1, "heterosexual", "other"))
+fbdf <- mutate(fbdf, InRelationship = factor(ifelse(fbdf$Relationship == 1, "yes", "no")))
+fbdf <- select(fbdf, -Relationship)
+fbdf$Emp <- as.factor(fbdf$Emp <- ifelse(Emp == 1, "employed", "unemployed"))
+fbdf <- mutate(fbdf, HasCollege = factor(ifelse(Edu == 1, "no", "yes")))
+fbdf <- select(fbdf, -Edu)
+fbdf$USA <- as.factor(fbdf$USA <- ifelse(USA == 1, "yes", "no"))
+fbdf <- mutate(fbdf, ProfilePic = factor(ifelse(Profile == 1, "self", "other")))
+fbdf <- select(fbdf, -Profile)
+fbdf <- mutate(fbdf, CoverPic = factor(ifelse(Cover == 1, "self", "other")))
+fbdf <- select(fbdf, -Cover)
+fbdf$MidWest <- as.factor(fbdf$MidWest <- ifelse(MidWest == 1, "yes", "no"))
+fbdf$Seast <- as.factor(fbdf$Seast <- ifelse(Seast == 1, "yes", "no"))
+fbdf$West <- as.factor(fbdf$West <- ifelse(West == 1, "yes", "no"))
+fbdf <- mutate(fbdf, Region = factor(case_when(
+  MidWest == "yes" ~ "Midwest",
+  Seast == "yes" ~ "Seast",
+  West == "yes" ~ "West",
+  TRUE ~ "other"
+)))
+```
+
+
+```{r}
+str(fbdf)
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+summary(fbdf)
+```
+
+
+```{r}
+ggplot(fbdf, 
+       aes(x = Photos, 
+           y = Friends)) +
+  geom_point()
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
